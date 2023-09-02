@@ -2,6 +2,7 @@ from typing import Any
 import pygame
 from pygame.sprite import Group
 from enemy import enemy
+from fire import fire
 
 Swidth= 900
 Sheight= 600
@@ -31,6 +32,9 @@ class player(pygame.sprite.Sprite):
             self.speed_y = -10
         if keys[pygame.K_s] or keys[pygame.K_DOWN]:
             self.speed_y = 10
+        if keys[pygame.K_SPACE]:
+            self.shots()
+            self.shots2()
 
         self.rect.x += self.speed_x
         self.rect.y += self.speed_y
@@ -44,6 +48,14 @@ class player(pygame.sprite.Sprite):
             self.rect.bottom = Sheight
         if self.rect.top < 0:
             self.rect.top = 0
+    
+    def shots(self):
+        shot= fire(self.rect.centerx -40, self.rect.centery +15 )
+        Shots.add(shot)
+    def shots2(self):
+        shot= fire(self.rect.centerx +40, self.rect.centery +15)
+        Shots.add(shot)
+
         
 
 
@@ -56,6 +68,7 @@ clock = pygame.time.Clock()
 # Sprites
 
 Player = pygame.sprite.Group()
+Shots = pygame.sprite.Group()
 Enemies = pygame.sprite.Group()
 
 # Add Sprites
@@ -82,6 +95,8 @@ while running:
 
     Player.update()
     Enemies.update()
+    Shots.update()
+
     
     if not Enemies:
         for x in range(6):
@@ -92,5 +107,6 @@ while running:
 
     Player.draw(screen)
     Enemies.draw(screen)
+    Shots.draw(screen)
 
     pygame.display.flip()
