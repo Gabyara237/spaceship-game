@@ -1,13 +1,26 @@
 import pygame
+from pygame.sprite import Group
 
 Swidth= 900
 Sheight= 600
 FPS= 60
 
-clock=pygame.time.Clock()
+class player(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__() 
+        self.image = pygame.image.load('assets/spaceships-player.png')
+        self.rect = self.image.get_rect()
+        self.rect.center=(450,500)
+
 
 class start():
     pygame.init()
+
+
+clock = pygame.time.Clock()
+Player = pygame.sprite.Group()
+players = player()
+Player.add(players)
 
 
 screen= pygame.display.set_mode((Swidth,Sheight))
@@ -23,4 +36,5 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+    Player.draw(screen)
     pygame.display.flip()
