@@ -50,10 +50,10 @@ class player(pygame.sprite.Sprite):
             self.rect.top = 0
     
     def shots(self):
-        shot= fire(self.rect.centerx -40, self.rect.centery +15 )
+        shot= fire(self.rect.centerx -45, self.rect.centery +20 )
         Shots.add(shot)
     def shots2(self):
-        shot= fire(self.rect.centerx +40, self.rect.centery +15)
+        shot= fire(self.rect.centerx +45, self.rect.centery +20)
         Shots.add(shot)
 
         
@@ -88,6 +88,7 @@ running =True
 while running:
     clock.tick(FPS)
     screen.blit(background,(0,0))
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -97,7 +98,13 @@ while running:
     Enemies.update()
     Shots.update()
 
-    
+    ship_collision = pygame.sprite.groupcollide(Player,Enemies, False, False)
+    shot_collision = pygame.sprite.groupcollide(Shots,Enemies, True, True)
+
+    if ship_collision:
+        players.kill()
+
+
     if not Enemies:
         for x in range(6):
             enemies = enemy()
