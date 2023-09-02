@@ -1,6 +1,7 @@
 from typing import Any
 import pygame
 from pygame.sprite import Group
+from enemy import enemy
 
 Swidth= 900
 Sheight= 600
@@ -34,7 +35,7 @@ class player(pygame.sprite.Sprite):
         self.rect.x += self.speed_x
         self.rect.y += self.speed_y
 
-
+        
         if self.rect.left< 0:
             self.rect.left = 0
         if self.rect.right > Swidth:
@@ -51,9 +52,18 @@ class start():
 
 
 clock = pygame.time.Clock()
+
+# Sprites
+
 Player = pygame.sprite.Group()
+Enemies = pygame.sprite.Group()
+
+# Add Sprites
 players = player()
 Player.add(players)
+
+enemies = enemy()
+Enemies.add(enemies)
 
 
 screen= pygame.display.set_mode((Swidth,Sheight))
@@ -72,6 +82,11 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
+
     Player.update()
+
+
     Player.draw(screen)
+    Enemies.draw(screen)
+
     pygame.display.flip()
