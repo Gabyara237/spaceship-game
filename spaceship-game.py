@@ -35,6 +35,17 @@ class player(pygame.sprite.Sprite):
         self.rect.y += self.speed_y
 
 
+        if self.rect.left< 0:
+            self.rect.left = 0
+        if self.rect.right > Swidth:
+            self.rect.right = Swidth
+        if self.rect.bottom > Sheight:
+            self.rect.bottom = Sheight
+        if self.rect.top < 0:
+            self.rect.top = 0
+        
+
+
 class start():
     pygame.init()
 
