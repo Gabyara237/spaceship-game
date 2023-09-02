@@ -13,7 +13,7 @@ class player(pygame.sprite.Sprite):
         super().__init__() 
         self.image = pygame.image.load('assets/spaceships-player.png')
         self.rect = self.image.get_rect()
-        self.rect.center = (450,500)
+        self.rect.center = (450,550)
         self.speed_x= 0
         self.speed_y= 0
 
@@ -36,7 +36,7 @@ class player(pygame.sprite.Sprite):
         self.rect.y += self.speed_y
 
         
-        if self.rect.left< 0:
+        if self.rect.left < 0:
             self.rect.left = 0
         if self.rect.right > Swidth:
             self.rect.right = Swidth
@@ -62,9 +62,6 @@ Enemies = pygame.sprite.Group()
 players = player()
 Player.add(players)
 
-enemies = enemy()
-Enemies.add(enemies)
-
 
 screen= pygame.display.set_mode((Swidth,Sheight))
 pygame.display.set_caption("My Spaceship Game")
@@ -85,6 +82,12 @@ while running:
 
     Player.update()
     Enemies.update()
+    
+    if not Enemies:
+        for x in range(6):
+            enemies = enemy()
+            Enemies.add(enemies)
+
 
 
     Player.draw(screen)
