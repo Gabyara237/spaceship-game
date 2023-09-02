@@ -4,6 +4,8 @@ import random
 Swidth= 900
 Sheight= 600
 
+Black = (0,0,0)
+White = (255,255,255)
 Red = (255, 0, 0)
 Green = (0, 255, 0)
 Blue = (0, 0, 255)
@@ -18,8 +20,8 @@ class enemy(pygame.sprite.Sprite):
         self.rect.x = random.randrange(Swidth - self.rect.width)
         self.rect.y = random.randrange(300 - self.rect.height)
 
-        self.speed_x = random.randrange(1,10)
-        self.speed_y = random.randrange(1,10)
+        self.speed_x = random.randrange(1,5)
+        self.speed_y = random.randrange(1,5)
     
     def update (self):
         self.rect.x += self.speed_x
