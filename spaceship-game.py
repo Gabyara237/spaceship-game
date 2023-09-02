@@ -84,6 +84,7 @@ while running:
 
 
     Player.update()
+    Enemies.update()
 
 
     Player.draw(screen)

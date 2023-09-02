@@ -17,3 +17,10 @@ class enemy(pygame.sprite.Sprite):
         self.rect.center = (200,500)
         self.rect.x = random.randrange(Swidth - self.rect.width)
         self.rect.y = random.randrange(300 - self.rect.height)
+
+        self.speed_x = random.randrange(1,10)
+        self.speed_y = random.randrange(1,10)
+    
+    def update (self):
+        self.rect.x += self.speed_x
+        self.rect.y += self.speed_y
