@@ -1,4 +1,3 @@
-from typing import Any
 import pygame
 from pygame.sprite import Group
 from enemy import enemy
@@ -65,6 +64,7 @@ class player(pygame.sprite.Sprite):
         if keys[pygame.K_SPACE]:
             self.shots()
             self.shots2()
+            shot_sound.play()
 
         self.rect.x += self.speed_x
         self.rect.y += self.speed_y
@@ -92,7 +92,15 @@ class player(pygame.sprite.Sprite):
 class start():
     pygame.init()
 
+shot_sound = pygame.mixer.Sound('assets/shot-sound.wav')
+shot_sound.set_volume(0.1)
+point_sound = pygame.mixer.Sound('assets/point-sound.wav')
+background_sound = pygame.mixer.Sound('assets/background-sound.mp3')
+game_over_sound = pygame.mixer.Sound('assets/game-over-sound.wav')
+game_over_sound.set_volume(0.2)
+pygame.mixer.music.set_volume(0.2)
 
+background_sound.play()
 clock = pygame.time.Clock()
 
 # Sprites
@@ -142,6 +150,7 @@ while running:
 
     if not game_over:
         if game_started:
+           
             text(screen,Times,"Score: " + str(score).zfill(4),White,30, 780,50)
        
 
@@ -154,8 +163,8 @@ while running:
 
             if ship_collision:
                 for enemy_hit in ship_collision[players]:
-                    if not collision_happened:  # Verifica si ya ha ocurrido una colisión en esta iteración
-                        # Obtén las coordenadas de la colisión
+                    if not collision_happened:  
+                        
                         collision_x, collision_y = enemy_hit.rect.center
 
                         enemy_hit.kill()
@@ -164,12 +173,12 @@ while running:
                         if len(heart_images) > 0:
                             heart_images.pop()
 
-                        # Muestra la imagen de impacto en la posición de la colisión
+                        
                         screen.blit(impact_image, (collision_x - impact_image.get_width() // 2, collision_y - impact_image.get_height() // 2))
 
-                        collision_happened = True  # Marca que ha ocurrido una colisión en esta iteración
+                        collision_happened = True  
 
-            # Restablece la variable de colisión después de procesar todas las colisiones
+           
             collision_happened = False
 
             if lives <=0:
@@ -180,29 +189,23 @@ while running:
         
             if shot_collision:
                 score +=30
+                point_sound.play()
 
-                if not collision_happened:  # Verifica si ya ha ocurrido una colisión en esta iteración
+                if not collision_happened:  
                         for shot, enemies_hit in shot_collision.items():
                             for enemy_hit in enemies_hit:
-                              if not collision_happened:  # Verifica si ya ha ocurrido una colisión en esta iteración
-                                 # Obtén las coordenadas de la colisión
+                              if not collision_happened:  
                                 collision_x, collision_y = enemy_hit.rect.center
 
-                                # Muestra la imagen de impacto en la posición de la colisión
                                 screen.blit(impact_image, (collision_x - impact_image.get_width() // 2, collision_y - impact_image.get_height() // 2))
 
                                 collision_happened = True 
-            # Restablece la variable de colisión después de procesar todas las colisiones
             collision_happened = False
-       # players.kill()
-
 
             if not Enemies:
                 for x in range(10):
                     enemies = enemy()
                     Enemies.add(enemies)
-
-
 
             Player.draw(screen)
             Enemies.draw(screen)
@@ -214,6 +217,8 @@ while running:
                     game_started = True
 
     else:
+        background_sound.stop()
+        game_over_sound.play()
         text(screen,Times,"Game Over!", Red, 50, Swidth//2,Sheight//2)
 
         pygame.draw.rect(screen, White, restart_button)
@@ -222,7 +227,8 @@ while running:
         
         mouse_pos = pygame.mouse.get_pos()
         if event.type == pygame.MOUSEBUTTONDOWN and restart_button.collidepoint(mouse_pos):
-            
+            game_over_sound.stop()
+            background_sound.play()
             game_over = False
             lives = 5  
             score = 0  
