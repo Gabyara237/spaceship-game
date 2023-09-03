@@ -4,6 +4,7 @@ from pygame.sprite import Group
 from enemy import enemy
 from fire import fire
 
+
 Swidth= 900
 Sheight= 600
 game_over = False
@@ -12,14 +13,31 @@ game_over = False
 White = (255,255,255)
 Red = (255, 0, 0)
 Green = (0, 255, 0)
-Blue = (0, 0, 255)
+
 
 FPS= 60
+
+heart_image = pygame.image.load('assets/heart.png')
+impact_image = pygame.image.load('assets/impact.png')
 
 Consoles = pygame.font.match_font('consolas')
 Times = pygame.font.match_font('times')
 Arial = pygame.font.match_font('arial')
 Courier = pygame.font.match_font('courier')
+
+class WelcomeScreen():
+    def __init__(self):
+        self.background = pygame.image.load('assets/welcome.png')
+        self.title_font = pygame.font.Font(Times, 50)
+        self.text_font = pygame.font.Font(Times, 30)
+        self.start_text = self.text_font.render("Press ENTER to start", True, White)
+        self.show_screen = True
+
+    def update(self, screen):
+        screen.blit(self.background, (0, 0))
+       
+        screen.blit(self.start_text, (Swidth // 2 - self.start_text.get_width() // 2, 525))
+
 
 class player(pygame.sprite.Sprite):
     def __init__(self):
@@ -94,6 +112,8 @@ pygame.display.set_caption("My Spaceship Game")
 background = pygame.transform.scale(pygame.image.load('assets/galaxy-background.jpg').convert(),(900,600))
 
 lives= 5
+heart_images = [heart_image.copy() for _ in range(lives)]
+
 score=0
 def text(screen,fonts, text,color,dimensions, x,y):
     type_letter = pygame.font.Font(fonts,dimensions)
@@ -108,6 +128,10 @@ restart_text =  button_font.render("New game", True, Green)
 
 running =True
 
+welcome_screen = WelcomeScreen()
+game_started = False
+collision_happened = False 
+
 while running:
     clock.tick(FPS)
     screen.blit(background,(0,0))
@@ -117,42 +141,78 @@ while running:
             running = False
 
     if not game_over:
-        text(screen,Times,"Score: " + str(score).zfill(4),White,30, 780,50)
-        text(screen,Times,"Lives: " + str(lives),White,30, 100,50)
+        if game_started:
+            text(screen,Times,"Score: " + str(score).zfill(4),White,30, 780,50)
+       
 
-        Player.update()
-        Enemies.update()
-        Shots.update()
+            Player.update()
+            Enemies.update()
+            Shots.update()
 
-        ship_collision = pygame.sprite.groupcollide(Player,Enemies, False, False)
-        shot_collision = pygame.sprite.groupcollide(Shots,Enemies, True, True)
+            ship_collision = pygame.sprite.groupcollide(Player,Enemies, False, False)
+            shot_collision = pygame.sprite.groupcollide(Shots,Enemies, True, True)
 
-        if ship_collision:
-            for enemy_hit in ship_collision[players]:
-              enemy_hit.kill()
-            lives -= 1
+            if ship_collision:
+                for enemy_hit in ship_collision[players]:
+                    if not collision_happened:  # Verifica si ya ha ocurrido una colisión en esta iteración
+                        # Obtén las coordenadas de la colisión
+                        collision_x, collision_y = enemy_hit.rect.center
 
-        if lives <=0:
-          game_over= True
+                        enemy_hit.kill()
+                        lives -= 1
+
+                        if len(heart_images) > 0:
+                            heart_images.pop()
+
+                        # Muestra la imagen de impacto en la posición de la colisión
+                        screen.blit(impact_image, (collision_x - impact_image.get_width() // 2, collision_y - impact_image.get_height() // 2))
+
+                        collision_happened = True  # Marca que ha ocurrido una colisión en esta iteración
+
+            # Restablece la variable de colisión después de procesar todas las colisiones
+            collision_happened = False
+
+            if lives <=0:
+                game_over= True
         
-        if score < 0:
-            score = 0
+            if score < 0:
+                score = 0
         
-        if shot_collision:
-            score +=30
+            if shot_collision:
+                score +=30
+
+                if not collision_happened:  # Verifica si ya ha ocurrido una colisión en esta iteración
+                        for shot, enemies_hit in shot_collision.items():
+                            for enemy_hit in enemies_hit:
+                              if not collision_happened:  # Verifica si ya ha ocurrido una colisión en esta iteración
+                                 # Obtén las coordenadas de la colisión
+                                collision_x, collision_y = enemy_hit.rect.center
+
+                                # Muestra la imagen de impacto en la posición de la colisión
+                                screen.blit(impact_image, (collision_x - impact_image.get_width() // 2, collision_y - impact_image.get_height() // 2))
+
+                                collision_happened = True 
+            # Restablece la variable de colisión después de procesar todas las colisiones
+            collision_happened = False
        # players.kill()
 
 
-        if not Enemies:
-            for x in range(10):
-                enemies = enemy()
-                Enemies.add(enemies)
+            if not Enemies:
+                for x in range(10):
+                    enemies = enemy()
+                    Enemies.add(enemies)
 
 
 
-        Player.draw(screen)
-        Enemies.draw(screen)
-        Shots.draw(screen)
+            Player.draw(screen)
+            Enemies.draw(screen)
+            Shots.draw(screen)
+        else:
+            welcome_screen.update(screen)
+            for event in pygame.event.get():
+                if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
+                    game_started = True
+
     else:
         text(screen,Times,"Game Over!", Red, 50, Swidth//2,Sheight//2)
 
@@ -166,6 +226,12 @@ while running:
             game_over = False
             lives = 5  
             score = 0  
+            heart_images = [heart_image.copy() for _ in range(lives)]
+            for x in range(5):
+                    enemies = enemy()
+                    Enemies.add(enemies)
 
+    for i, heart in enumerate(heart_images):
+        screen.blit(heart, (20 + i * (heart.get_width() + 10), 20))
 
     pygame.display.flip()
