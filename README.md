@@ -6,6 +6,8 @@ This is a simple spaceship game developed in Python using the Pygame library.
 
 This game allows you to control a spaceship and shoot down enemies that appear on the screen. The goal is to survive for as long as possible and accumulate the highest score.
 
+Demo Video: https://youtu.be/OkB8Tl2257s
+
 ## Features
 
 - Simple keyboard controls for moving the spaceship and firing.
